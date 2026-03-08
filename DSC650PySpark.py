@@ -46,6 +46,12 @@ indexed_df6 = indexer6.fit(encoded_df5).transform(encoded_df5)
 encoder6 = OneHotEncoder(inputCols=["Payment_MethodIndex"], outputCols=["Payment_MethodVec"])
 encoded_df6 = encoder6.fit(indexed_df6).transform(indexed_df6)
 
+# Dropping strings so it will finish running, hopefully
+
+df_dropped = encoded_df6.drop("Brand", "BrandIndex","Model","ModelIndex","Country",
+                              "CountryIndex","Storage","StorageIndex","Color",
+                              "ColorIndex","Payment_Method","Payment_MethodIndex")
+
 # Step 3: Prepare the data for MLlib by assembling features into a vector
 assembler = VectorAssembler(
     inputCols=["Sale_ID", "BrandVec", "ModelVec", "CountryVec", "StorageVec", "ColorVec",
@@ -53,7 +59,7 @@ assembler = VectorAssembler(
                "Sale_Year"],
     outputCol="features"
 )
-assembled_df = assembler.transform(encoded_df6).select("features", "Price_USD")
+assembled_df = assembler.transform(df_dropped).select("features", "Price_USD")
 
 # Step 4: Split the data into training and testing sets
 train_data, test_data = assembled_df.randomSplit([0.7, 0.3])
