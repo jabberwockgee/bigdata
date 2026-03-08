@@ -13,7 +13,7 @@ spark = SparkSession.builder.appName("LassoRegression").enableHiveSupport().getO
 print("Step 1 complete")
 
 # Step 2: Load the data from the Hive table 'mobile' into a Spark DataFrame
-mobile_df = spark.sql("SELECT Sale_ID, Price_USD, Units_Sold, Revenue_USD, Customer_Rating, Sale_Month,"
+mobile_df = spark.sql("SELECT Price_USD, Units_Sold, Revenue_USD, Customer_Rating, Sale_Month,"
                       "Sale_Year FROM mobile")
 
 mobile_df = mobile_df.na.drop()
