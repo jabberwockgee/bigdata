@@ -4,6 +4,7 @@ from pyspark.ml.regression import LinearRegression
 from pyspark.ml.evaluation import RegressionEvaluator
 from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
 from pyspark.ml.feature import StringIndexer
+from pyspark.ml.feature import OneHotEncoder
 import happybase
 
 # Step 1: Create a Spark session
@@ -14,22 +15,45 @@ mobile_df = spark.sql("SELECT Sale_ID, Brand, Model, Country, Storage, Color, Pr
                       "Units_Sold, Revenue_USD, Customer_Rating, Payment_Method, Sale_Month,"
                       "Sale_Year FROM mobile")
 
-# Step 2.5: Turn all the strings into numeric indices?
-StringIndexer(inputCol="Brand", outputCol="Brand")
-StringIndexer(inputCol="Model", outputCol="Model")
-StringIndexer(inputCol="Country", outputCol="Country")
-StringIndexer(inputCol="Storage", outputCol="Storage")
-StringIndexer(inputCol="Color", outputCol="Color")
-StringIndexer(inputCol="Payment_Method", outputCol="Payment_Method")
+# Step 2.5: Turn all the strings into numeric indices
+indexer = StringIndexer(inputCol="Brand", outputCol="BrandIndex")
+indexed_df = indexer.fit(mobile_df).transform(mobile_df)
+encoder = OneHotEncoder(inputCols=["BrandIndex"], outputCols=["BrandVec"])
+encoded_df = encoder.fit(indexed_df).transform(indexed_df)
+
+indexer2 = StringIndexer(inputCol="Model", outputCol="ModelIndex")
+indexed_df2 = indexer2.fit(encoded_df).transform(encoded_df)
+encoder2 = OneHotEncoder(inputCols=["ModelIndex"], outputCols=["ModelVec"])
+encoded_df2 = encoder2.fit(indexed_df2).transform(indexed_df2)
+
+indexer3 = StringIndexer(inputCol="Country", outputCol="CountryIndex")
+indexed_df3 = indexer3.fit(encoded_df2).transform(encoded_df2)
+encoder3 = OneHotEncoder(inputCols=["CountryIndex"], outputCols=["CountryVec"])
+encoded_df3 = encoder3.fit(indexed_df3).transform(indexed_df3)
+
+indexer4 = StringIndexer(inputCol="Storage", outputCol="StorageIndex")
+indexed_df4 = indexer4.fit(encoded_df3).transform(encoded_df3)
+encoder4 = OneHotEncoder(inputCols=["StorageIndex"], outputCols=["StorageVec"])
+encoded_df4 = encoder4.fit(indexed_df4).transform(indexed_df4)
+
+indexer5 = StringIndexer(inputCol="Color", outputCol="ColorIndex")
+indexed_df5 = indexer5.fit(encoded_df4).transform(encoded_df4)
+encoder5 = OneHotEncoder(inputCols=["ColorIndex"], outputCols=["ColorVec"])
+encoded_df5 = encoder5.fit(indexed_df5).transform(indexed_df5)
+
+indexer6 = StringIndexer(inputCol="Payment_Method", outputCol="Payment_MethodIndex")
+indexed_df6 = indexer6.fit(encoded_df5).transform(encoded_df5)
+encoder6 = OneHotEncoder(inputCols=["Payment_MethodIndex"], outputCols=["Payment_MethodVec"])
+encoded_df6 = encoder6.fit(indexed_df6).transform(indexed_df6)
 
 # Step 3: Prepare the data for MLlib by assembling features into a vector
 assembler = VectorAssembler(
-    inputCols=["Sale_ID", "Brand", "Model", "Country", "Storage", "Color",
-               "Units_Sold", "Revenue_USD", "Customer_Rating", "Payment_Method", "Sale_Month",
+    inputCols=["Sale_ID", "BrandVec", "ModelVec", "CountryVec", "StorageVec", "ColorVec",
+               "Units_Sold", "Revenue_USD", "Customer_Rating", "Payment_MethodVec", "Sale_Month",
                "Sale_Year"],
     outputCol="features"
 )
-assembled_df = assembler.transform(mobile_df).select("features", "Price_USD")
+assembled_df = assembler.transform(encoded_df6).select("features", "Price_USD")
 
 # Step 4: Split the data into training and testing sets
 train_data, test_data = assembled_df.randomSplit([0.7, 0.3])
