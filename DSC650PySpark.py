@@ -52,8 +52,8 @@ print(f"R^2: {test_results.r2}")
 # ---- Write metrics to HBase with happybase (using the provided pattern) ----
 # Example data (row_key, column_family:column, value) populated with the metrics
 data = [
-    ('metrics1', 'cf:rmse', str(test_results.rootMeanSquaredError)),
-    ('metrics1', 'cf:r2',   str(test_results.r2)),
+    ('metrics1', 'mobile:rmse', str(test_results.rootMeanSquaredError)),
+    ('metrics1', 'mobile:r2',   str(test_results.r2)),
 ]
 
 # Function to write data to HBase inside each partition
