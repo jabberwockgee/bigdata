@@ -3,20 +3,29 @@ from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.regression import LinearRegression
 from pyspark.ml.evaluation import RegressionEvaluator
 from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
+from pyspark.ml.feature import StringIndexer
 import happybase
 
 # Step 1: Create a Spark session
 spark = SparkSession.builder.appName("LassoRegression").enableHiveSupport().getOrCreate()
 
 # Step 2: Load the data from the Hive table 'mobile' into a Spark DataFrame
-mobile_df = spark.sql("SELECT Sale_ID, Price_USD, "
-                      "Units_Sold, Revenue_USD, Customer_Rating, Sale_Month,"
+mobile_df = spark.sql("SELECT Sale_ID, Brand, Model, Country, Storage, Color, Price_USD, "
+                      "Units_Sold, Revenue_USD, Customer_Rating, Payment_Method, Sale_Month,"
                       "Sale_Year FROM mobile")
+
+# Step 2.5: Turn all the strings into numeric indices?
+StringIndexer(inputCol="Brand", outputCol="BrandIndex")
+StringIndexer(inputCol="Model", outputCol="ModelIndex")
+StringIndexer(inputCol="Country", outputCol="CountryIndex")
+StringIndexer(inputCol="Storage", outputCol="StorageIndex")
+StringIndexer(inputCol="Color", outputCol="ColorIndex")
+StringIndexer(inputCol="Payment_Method", outputCol="Payment_MethodIndex")
 
 # Step 3: Prepare the data for MLlib by assembling features into a vector
 assembler = VectorAssembler(
-    inputCols=["Sale_ID",
-               "Units_Sold", "Revenue_USD", "Customer_Rating", "Sale_Month",
+    inputCols=["Sale_ID", "BrandIndex", "ModelIndex", "CountryIndex", "StorageIndex", "ColorIndex",
+               "Units_Sold", "Revenue_USD", "Customer_Rating", "Payment_MethodIndex", "Sale_Month",
                "Sale_Year"],
     outputCol="features"
 )
