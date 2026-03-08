@@ -15,17 +15,17 @@ mobile_df = spark.sql("SELECT Sale_ID, Brand, Model, Country, Storage, Color, Pr
                       "Sale_Year FROM mobile")
 
 # Step 2.5: Turn all the strings into numeric indices?
-StringIndexer(inputCol="Brand", outputCol="BrandIndex")
-StringIndexer(inputCol="Model", outputCol="ModelIndex")
-StringIndexer(inputCol="Country", outputCol="CountryIndex")
-StringIndexer(inputCol="Storage", outputCol="StorageIndex")
-StringIndexer(inputCol="Color", outputCol="ColorIndex")
-StringIndexer(inputCol="Payment_Method", outputCol="Payment_MethodIndex")
+StringIndexer(inputCol="Brand", outputCol="Brand")
+StringIndexer(inputCol="Model", outputCol="Model")
+StringIndexer(inputCol="Country", outputCol="Country")
+StringIndexer(inputCol="Storage", outputCol="Storage")
+StringIndexer(inputCol="Color", outputCol="Color")
+StringIndexer(inputCol="Payment_Method", outputCol="Payment_Method")
 
 # Step 3: Prepare the data for MLlib by assembling features into a vector
 assembler = VectorAssembler(
-    inputCols=["Sale_ID", "BrandIndex", "ModelIndex", "CountryIndex", "StorageIndex", "ColorIndex",
-               "Units_Sold", "Revenue_USD", "Customer_Rating", "Payment_MethodIndex", "Sale_Month",
+    inputCols=["Sale_ID", "Brand", "Model", "Country", "Storage", "Color",
+               "Units_Sold", "Revenue_USD", "Customer_Rating", "Payment_Method", "Sale_Month",
                "Sale_Year"],
     outputCol="features"
 )
