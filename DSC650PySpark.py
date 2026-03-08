@@ -22,7 +22,6 @@ print("Step 2 complete")
 assembler = VectorAssembler(
     inputCols=["Units_Sold", "Revenue_USD", "Customer_Rating", "Sale_Month", "Sale_Year"],
     outputCol="features",
-    handleInvalid="skip"
 )
 assembled_df = assembler.transform(mobile_df).select("features", "Price_USD")
 
