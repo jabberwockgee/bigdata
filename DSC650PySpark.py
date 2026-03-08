@@ -19,12 +19,12 @@ mobile_df = spark.sql("SELECT Sale_ID, Price_USD, "
 
 # Step 3: Prepare the data for MLlib by assembling features into a vector
 assembler = VectorAssembler(
-    inputCols=["Sale_ID", "BrandVec", "ModelVec", "CountryVec", "StorageVec", "ColorVec",
-               "Units_Sold", "Revenue_USD", "Customer_Rating", "Payment_MethodVec", "Sale_Month",
+    inputCols=["Sale_ID",
+               "Units_Sold", "Revenue_USD", "Customer_Rating", "Sale_Month",
                "Sale_Year"],
     outputCol="features"
 )
-assembled_df = assembler.transform(df_dropped).select("features", "Price_USD")
+assembled_df = assembler.transform(mobile_df).select("features", "Price_USD")
 
 # Step 4: Split the data into training and testing sets
 train_data, test_data = assembled_df.randomSplit([0.7, 0.3])
