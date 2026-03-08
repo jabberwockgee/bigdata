@@ -6,7 +6,7 @@ from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
 import happybase
 
 # Step 1: Create a Spark session
-spark = SparkSession.builder.appName("Lasso Regression").enableHiveSupport().getOrCreate()
+spark = SparkSession.builder.appName("LassoRegression").enableHiveSupport().getOrCreate()
 
 # Step 2: Load the data from the Hive table 'mobile' into a Spark DataFrame
 mobile_df = spark.sql("SELECT Sale_ID, Brand, Model, Country, Storage, Color, Price_USD, "
