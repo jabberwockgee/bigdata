@@ -9,14 +9,14 @@ import happybase
 spark = SparkSession.builder.appName("LassoRegression").enableHiveSupport().getOrCreate()
 
 # Step 2: Load the data from the Hive table 'mobile' into a Spark DataFrame
-mobile_df = spark.sql("SELECT Sale_ID, Brand, Model, Country, Storage, Color, Price_USD, "
-                      "Units_Sold, Revenue_USD, Customer_Rating, Payment_Method, Sale_Month,"
+mobile_df = spark.sql("SELECT Sale_ID, Price_USD, "
+                      "Units_Sold, Revenue_USD, Customer_Rating, Sale_Month,"
                       "Sale_Year FROM mobile")
 
 # Step 3: Prepare the data for MLlib by assembling features into a vector
 assembler = VectorAssembler(
-    inputCols=["Sale_ID", "Brand", "Model", "Country", "Storage", "Color",
-               "Units_Sold", "Revenue_USD", "Customer_Rating", "Payment_Method", "Sale_Month",
+    inputCols=["Sale_ID",
+               "Units_Sold", "Revenue_USD", "Customer_Rating", "Sale_Month",
                "Sale_Year"],
     outputCol="features"
 )
